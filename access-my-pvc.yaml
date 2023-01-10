@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: access-my-pvc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: access-my-pvc  
+  template:
+    metadata:
+      labels:
+        app: access-my-pvc
+    spec:
+      containers:
+        - name: sec-ctx-demo
+          image: busybox:1.28
+          imagePullPolicy: Always
+          command: ["sh", "-c", "sleep 1h"]
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+          resources:
+            requests:
+              memory: ".5Gi"
+              cpu: "500m"
+            limits:
+              memory: ".5Gi"
+              cpu: "500m"
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: mysql-pvc
